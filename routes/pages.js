@@ -18,4 +18,8 @@ module.exports = app => {
   app.get('/gravity', (req, res) => {
     res.render('pages/gravity');
   });
+
+  app.get('/collisions', (req, res) => {
+    res.render('pages/collisions');
+  });
 };
