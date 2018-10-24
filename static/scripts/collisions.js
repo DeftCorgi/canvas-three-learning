@@ -7,16 +7,27 @@ const c = canvas.getContext('2d');
 // useful constants
 const NUM_CIRCLES = 300;
 const MAX_RADIUS = 10;
-const MAX_VELOCITY = 5;
-const COLORS = ['#5C70B9', '#4C6290', '#5C9DBA', '#6DA2C5', '#7A92CE'];
-const CURSOR_INTERACT_RADIUS = 70;
-const CURSOR_ATTRACTION = 2;
+const MAX_VELOCITY = 2.7;
+const COLORS = [
+  { r: 55, g: 175, b: 204 },
+  { r: 242, g: 192, b: 120 },
+  { r: 219, g: 89, b: 105 },
+  { r: 193, g: 219, b: 179 },
+  { r: 126, g: 188, b: 137 }
+];
+const CURSOR_RADIUS = 200;
 const GRAVITY = 0.5;
 const CIRCLE_RADIUS = 20;
+const ALPHA_SHIFT = 0.012;
 
 const mouse = {
   x: null,
   y: null
+};
+
+// helpers
+const randomIntFromRange = (min, max) => {
+  return Math.random() * (max - min) + min;
 };
 
 // Event listeners
@@ -69,16 +80,13 @@ const resolveCollision = (circle1, circle2) => {
     // velocity after 1D collision equation
     const x1 = (u1.x * (m1 - m2)) / (m1 + m2) + (u2.x * 2 * m2) / (m1 + m2);
     const x2 = (u2.x * (m1 - m2)) / (m1 + m2) + (u1.x * 2 * m2) / (m1 + m2);
-    console.log(u1.x * m1);
 
     const v1 = { x: x1, y: u1.y };
     const v2 = { x: x2, y: u2.y };
-    console.log(v1);
 
     // rotate back to atan proper angle
     const finalV1 = rotate(v1, -angle);
     const finalV2 = rotate(v2, -angle);
-    console.log(finalV1);
 
     // swap velocitys
     circle1.velocity.x = finalV1.x;
@@ -101,26 +109,32 @@ const distance = (x1, x2, y1, y2) => {
 class Circle {
   constructor() {
     this.velocity = {
-      x: (Math.random() - 0.5) * MAX_VELOCITY,
-      y: (Math.random() - 0.5) * MAX_VELOCITY
+      x: randomIntFromRange(-MAX_VELOCITY, MAX_VELOCITY),
+      y: randomIntFromRange(-MAX_VELOCITY, MAX_VELOCITY)
     };
     this.startRadius = Math.random() * MAX_RADIUS;
     this.radius = CIRCLE_RADIUS;
     this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
     this.x = Math.random() * (innerWidth - this.radius * 2) + this.radius;
     this.y = Math.random() * (innerHeight - this.radius * 2) + this.radius;
-    this.friction = 0.95;
+    this.friction = 1;
     this.mass = 1;
+    this.fill = false;
+    this.alpha = 0;
   }
 
   draw() {
     // render the circle
     c.beginPath();
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    c.strokeStyle = this.color;
-    c.fillStyle = this.color;
+    c.strokeStyle = `rgba(${this.color.r}, ${this.color.g}, ${
+      this.color.b
+    }, 1)`;
+    c.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${
+      this.alpha
+    })`;
     c.stroke();
-    // c.fill();
+    c.fill();
   }
 
   update(colliders) {
@@ -151,6 +165,17 @@ class Circle {
       }
     });
 
+    // mouse interaction
+    if (
+      this.x + this.radius < mouse.x + CURSOR_RADIUS &&
+      this.x - this.radius > mouse.x - CURSOR_RADIUS &&
+      this.y + this.radius < mouse.y + CURSOR_RADIUS &&
+      this.y - this.radius > mouse.y - CURSOR_RADIUS
+    ) {
+      this.alpha = Math.min(this.alpha + ALPHA_SHIFT, 1);
+    } else {
+      this.alpha = Math.max(this.alpha - ALPHA_SHIFT, 0);
+    }
     // update position based on velocity
     this.x += this.velocity.x;
     this.y += this.velocity.y;
@@ -170,7 +195,6 @@ const init = () => {
     do {
       intersect = false;
       initCircles.map(c => {
-        // console.log(distance(newCircle.x, c.x, newCircle.y, c.y));
         if (distance(newCircle.x, c.x, newCircle.y, c.y) < CIRCLE_RADIUS * 2) {
           intersect = true;
           newCircle.x =
