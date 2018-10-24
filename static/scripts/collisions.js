@@ -5,14 +5,14 @@ canvas.width = window.innerWidth;
 const c = canvas.getContext('2d');
 
 // useful constants
-const NUM_CIRCLES = 5;
-const MAX_RADIUS = 200;
+const NUM_CIRCLES = 300;
+const MAX_RADIUS = 10;
 const MAX_VELOCITY = 5;
 const COLORS = ['#5C70B9', '#4C6290', '#5C9DBA', '#6DA2C5', '#7A92CE'];
 const CURSOR_INTERACT_RADIUS = 70;
 const CURSOR_ATTRACTION = 2;
 const GRAVITY = 0.5;
-const CIRCLE_RADIUS = 100;
+const CIRCLE_RADIUS = 20;
 
 const mouse = {
   x: null,
@@ -48,33 +48,37 @@ const rotate = (velocity, angle) => {
 
 // resolves the collision between 2 circles
 const resolveCollision = (circle1, circle2) => {
-  const xVelocityDiff = circle2.dx - circle1.dx;
-  const yVelocityDiff = circle2.dy - circle1.dy;
+  const xVelocityDiff = circle2.velocity.x - circle1.velocity.x;
+  const yVelocityDiff = circle2.velocity.y - circle1.velocity.y;
 
   const xDistance = circle2.x - circle1.x;
   const yDistance = circle2.y - circle1.y;
 
-  if (xVelocityDiff * xDistance - yVelocityDiff * yDistance >= 0) {
+  if (xVelocityDiff * xDistance + yVelocityDiff * yDistance <= 0) {
     const m1 = circle1.mass;
     const m2 = circle2.mass;
 
     // arc tangent of
-    const angle = Math.atan2(circle1.x - circle2.x, circle1.y - circle2.y);
+    const angle = -Math.atan2(circle2.y - circle1.y, circle2.x - circle1.x);
 
     // velcotiy before equation
     const u1 = rotate(circle1.velocity, angle);
     const u2 = rotate(circle2.velocity, angle);
+    // console.log(u1);
 
     // velocity after 1D collision equation
-    const x1 = (u1 * (m1 - m2) + 2 * m2 * u2) / m1 + m2;
-    const x2 = (u2 * (m2 - m1) + 2 * m1 * u1) / m1 + m2;
+    const x1 = (u1.x * (m1 - m2)) / (m1 + m2) + (u2.x * 2 * m2) / (m1 + m2);
+    const x2 = (u2.x * (m1 - m2)) / (m1 + m2) + (u1.x * 2 * m2) / (m1 + m2);
+    console.log(u1.x * m1);
 
     const v1 = { x: x1, y: u1.y };
     const v2 = { x: x2, y: u2.y };
+    console.log(v1);
 
     // rotate back to atan proper angle
     const finalV1 = rotate(v1, -angle);
     const finalV2 = rotate(v2, -angle);
+    console.log(finalV1);
 
     // swap velocitys
     circle1.velocity.x = finalV1.x;
@@ -96,15 +100,16 @@ const distance = (x1, x2, y1, y2) => {
 // circle class
 class Circle {
   constructor() {
-    this.dx = (Math.random() - 0.5) * MAX_VELOCITY;
-    this.dy = (Math.random() - 0.5) * MAX_VELOCITY;
+    this.velocity = {
+      x: (Math.random() - 0.5) * MAX_VELOCITY,
+      y: (Math.random() - 0.5) * MAX_VELOCITY
+    };
     this.startRadius = Math.random() * MAX_RADIUS;
     this.radius = CIRCLE_RADIUS;
     this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
     this.x = Math.random() * (innerWidth - this.radius * 2) + this.radius;
     this.y = Math.random() * (innerHeight - this.radius * 2) + this.radius;
     this.friction = 0.95;
-    this.velocity = { x: this.dx, y: this.dy };
     this.mass = 1;
   }
 
@@ -120,13 +125,19 @@ class Circle {
 
   update(colliders) {
     // bounce at edges
-    if (this.x + this.radius > innerWidth || this.x - this.radius < 0) {
-      this.dx = -this.dx;
+    if (
+      this.x + this.radius + this.velocity.x >= innerWidth ||
+      this.x - this.radius + this.velocity.x <= 0
+    ) {
+      this.velocity.x = -this.velocity.x;
     }
 
-    if (this.y + this.radius > innerHeight || this.y - this.radius < 0) {
-      this.dy = -this.dy * this.friction;
-      this.dx = this.dx * 0.95;
+    if (
+      this.y + this.radius + this.velocity.y >= innerHeight ||
+      this.y - this.radius + this.velocity.y <= 0
+    ) {
+      this.velocity.y = -this.velocity.y * this.friction;
+      this.velocity.x = this.velocity.x * 0.95;
     }
 
     // collision detection between circles
@@ -141,8 +152,8 @@ class Circle {
     });
 
     // update position based on velocity
-    this.x += this.dx;
-    this.y += this.dy;
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
 
     this.draw();
   }
