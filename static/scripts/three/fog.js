@@ -10,7 +10,7 @@ const init = () => {
 
   // instantiate objecst
   const box1 = createBox(1, 1, 1);
-  const plane1 = createPlane(5, 5);
+  const plane1 = createPlane(20, 20);
 
   // move stuff around
   camera.position.z = 5;
@@ -28,11 +28,15 @@ const init = () => {
   scene.add(box1);
   scene.add(plane1);
 
+  // add fog
+  scene.fog = new THREE.FogExp2('blue', 0.2);
+
   // think that draws our models on screen
   var renderer = new THREE.WebGLRenderer();
 
   // set size of our renderer
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor('blue');
 
   const canvas = document.getElementById('webgl');
   canvas.appendChild(renderer.domElement);
@@ -45,10 +49,8 @@ const update = (renderer, scene, camera) => {
   renderer.render(scene, camera);
 
   const plane = scene.getObjectByName('plane-1');
-  scene.traverse(child => {
-    child.scale.x += 0.01;
-  });
   // plane.rotateZ(Math.PI / 20);
+  camera.translateZ(0.01);
 
   window.requestAnimationFrame(() => update(renderer, scene, camera));
 };
