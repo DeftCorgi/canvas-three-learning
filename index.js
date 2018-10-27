@@ -1,7 +1,6 @@
 const express = require('express');
 const ejsLayouts = require('express-ejs-layouts');
 const path = require('path');
-const pagesRoutes = require('./routes/pages');
 
 const app = express();
 
@@ -13,6 +12,7 @@ app.use(ejsLayouts);
 app.use(express.static(path.join(__dirname, 'static')));
 
 // routes
-require('./routes/pages')(app);
+require('./routes/canvas')(app);
+require('./routes/three')(app);
 
 app.listen(3000);

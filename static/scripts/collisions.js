@@ -5,8 +5,7 @@ canvas.width = window.innerWidth;
 const c = canvas.getContext('2d');
 
 // useful constants
-const NUM_CIRCLES = 300;
-const MAX_RADIUS = 10;
+const CIRCLE_RADIUS = 20;
 const MAX_VELOCITY = 2.7;
 const COLORS = [
   { r: 55, g: 175, b: 204 },
@@ -17,7 +16,7 @@ const COLORS = [
 ];
 const CURSOR_RADIUS = 200;
 const GRAVITY = 0.5;
-const CIRCLE_RADIUS = 20;
+
 const ALPHA_SHIFT = 0.012;
 
 const mouse = {
@@ -45,6 +44,7 @@ window.addEventListener('mousedown', e => {
 window.addEventListener('resize', e => {
   canvas.height = window.innerHeight;
   canvas.width = window.innerWidth;
+  init();
 });
 
 // rotates our velocity based on an angle
@@ -112,11 +112,12 @@ class Circle {
       x: randomIntFromRange(-MAX_VELOCITY, MAX_VELOCITY),
       y: randomIntFromRange(-MAX_VELOCITY, MAX_VELOCITY)
     };
-    this.startRadius = Math.random() * MAX_RADIUS;
     this.radius = CIRCLE_RADIUS;
     this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    this.x = Math.random() * (innerWidth - this.radius * 2) + this.radius;
-    this.y = Math.random() * (innerHeight - this.radius * 2) + this.radius;
+    this.x =
+      Math.random() * (window.innerWidth - this.radius * 2) + this.radius;
+    this.y =
+      Math.random() * (window.innerHeight - this.radius * 2) + this.radius;
     this.friction = 1;
     this.mass = 1;
     this.fill = false;
@@ -140,18 +141,18 @@ class Circle {
   update(colliders) {
     // bounce at edges
     if (
-      this.x + this.radius + this.velocity.x >= innerWidth ||
+      this.x + this.radius + this.velocity.x >= window.innerWidth ||
       this.x - this.radius + this.velocity.x <= 0
     ) {
       this.velocity.x = -this.velocity.x;
     }
 
     if (
-      this.y + this.radius + this.velocity.y >= innerHeight ||
+      this.y + this.radius + this.velocity.y >= window.innerHeight ||
       this.y - this.radius + this.velocity.y <= 0
     ) {
       this.velocity.y = -this.velocity.y * this.friction;
-      this.velocity.x = this.velocity.x * 0.95;
+      this.velocity.x = this.velocity.x * this.friction;
     }
 
     // collision detection between circles
@@ -172,7 +173,7 @@ class Circle {
       this.y + this.radius < mouse.y + CURSOR_RADIUS &&
       this.y - this.radius > mouse.y - CURSOR_RADIUS
     ) {
-      this.alpha = Math.min(this.alpha + ALPHA_SHIFT, 1);
+      this.alpha = Math.min(this.alpha + ALPHA_SHIFT, 0.5);
     } else {
       this.alpha = Math.max(this.alpha - ALPHA_SHIFT, 0);
     }
@@ -187,8 +188,13 @@ class Circle {
 // circles array
 let circles = [];
 const init = () => {
+  // calculate how many circles to create based on screen size
+  let numSquares =
+    (window.innerHeight * window.innerWidth) / Math.pow(CIRCLE_RADIUS * 2, 2);
+  let numCircles = Math.floor(numSquares * 0.4);
+
   const initCircles = [new Circle()];
-  for (let i = 0; i < NUM_CIRCLES - 1; i++) {
+  for (let i = 0; i < numCircles - 1; i++) {
     let newCircle = new Circle();
     let intersect;
     // check with all circles if new one intersects
@@ -198,10 +204,10 @@ const init = () => {
         if (distance(newCircle.x, c.x, newCircle.y, c.y) < CIRCLE_RADIUS * 2) {
           intersect = true;
           newCircle.x =
-            Math.random() * (innerWidth - newCircle.radius * 2) +
+            Math.random() * (window.innerWidth - newCircle.radius * 2) +
             newCircle.radius;
           newCircle.y =
-            Math.random() * (innerHeight - newCircle.radius * 2) +
+            Math.random() * (window.innerHeight - newCircle.radius * 2) +
             newCircle.radius;
         }
       });
@@ -214,7 +220,7 @@ const init = () => {
 // animation loop
 animate = () => {
   requestAnimationFrame(animate);
-  c.clearRect(0, 0, innerWidth, innerHeight);
+  c.clearRect(0, 0, window.innerWidth, window.innerHeight);
   // draw all circles
   circles.map(circle => circle.update(circles));
 };
