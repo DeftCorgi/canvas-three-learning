@@ -27,4 +27,4 @@ app.use(
 require('./routes/canvas')(app);
 require('./routes/three')(app);
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
