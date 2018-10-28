@@ -5,6 +5,12 @@ const init = () => {
   // thing that draws our models on screen
   var renderer = new THREE.WebGLRenderer();
 
+  // configure our renderer
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor('blue');
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.BasicShadowMap;
+
   // container for everything
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
@@ -17,7 +23,7 @@ const init = () => {
   // instantiate objecst
   const box1 = createBox(1, 1, 1);
   const plane1 = createPlane(20, 20);
-  const light1 = createLight('white', 3);
+  const light1 = createLight('white', 0.8);
   const sphere1 = createSphere(0.1);
 
   // controls
@@ -32,9 +38,10 @@ const init = () => {
   plane1.rotateX(Math.PI / 2);
   plane1.name = 'plane-1';
 
-  box1.position.y = box1.geometry.parameters.height / 2;
+  box1.position.y = box1.geometry.parameters.height / 2 + 1;
+  box1.name = 'box1';
 
-  light1.translateY(5);
+  light1.translateY(3.6);
 
   // add stuff to the scene
   scene.add(camera);
@@ -46,13 +53,6 @@ const init = () => {
   // add GUI properties
   gui.add(light1, 'intensity', 0, 10);
   gui.add(light1.position, 'y', 0, 10);
-  gui.add(camera.position, 'x', -10, 10);
-  gui.add(camera.position, 'y', -10, 10);
-  gui.add(camera.position, 'z', -10, 10);
-
-  // set size of our renderer
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor('blue');
 
   const canvas = document.getElementById('webgl');
   canvas.appendChild(renderer.domElement);
@@ -65,6 +65,12 @@ const init = () => {
 const update = (renderer, scene, camera, controls) => {
   controls.update();
   renderer.render(scene, camera);
+
+  // spin the box
+  const box = scene.getObjectByName('box1');
+  box.rotateY(Math.PI / 40);
+  box.rotateX(Math.PI / 50);
+
   window.requestAnimationFrame(() => update(renderer, scene, camera, controls));
 };
 
@@ -83,7 +89,7 @@ const createPlane = (width, height, color = '#800000') => {
     side: THREE.DoubleSide
   });
   const planeMesh = new THREE.Mesh(planeGeo, planeMat);
-  planeMesh.recieveShadows = true;
+  planeMesh.receiveShadow = true;
   return planeMesh;
 };
 
@@ -96,6 +102,7 @@ const createSphere = radius => {
 
 const createLight = (color = 'white', intensity = 0.2) => {
   const light = new THREE.SpotLight(color, intensity);
+  light.castShadow = true;
   return light;
 };
 

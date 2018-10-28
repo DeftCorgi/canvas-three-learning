@@ -10,4 +10,8 @@ module.exports = app => {
   app.get('/three/lights', (req, res) => {
     res.render('pages/three/lights');
   });
+
+  app.get('/three/shadows', (req, res) => {
+    res.render('pages/three/shadows');
+  });
 };
