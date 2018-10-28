@@ -10,6 +10,18 @@ app.set('view engine', 'ejs');
 // middleware
 app.use(ejsLayouts);
 app.use(express.static(path.join(__dirname, 'static')));
+app.use(
+  '/lib/dat.gui/',
+  express.static(path.join(__dirname, 'node_modules/dat.gui/build/'))
+);
+app.use(
+  '/lib/three/',
+  express.static(path.join(__dirname, 'node_modules/three/build/'))
+);
+app.use(
+  '/lib/three-orbit-controls',
+  express.static(path.join(__dirname, 'node_modules/three-orbit-controls/'))
+);
 
 // routes
 require('./routes/canvas')(app);

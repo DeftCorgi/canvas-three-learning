@@ -6,4 +6,8 @@ module.exports = app => {
   app.get('/three/fog', (req, res) => {
     res.render('pages/three/fog');
   });
+
+  app.get('/three/lights', (req, res) => {
+    res.render('pages/three/lights');
+  });
 };

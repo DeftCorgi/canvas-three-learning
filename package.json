@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dat.gui": "^0.7.3",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-ejs-layouts": "^2.5.0",
-    "three": "^0.97.0"
+    "three": "^0.97.0",
+    "three-orbit-controls": "^82.1.0"
   }
 }
