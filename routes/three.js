@@ -14,4 +14,8 @@ module.exports = app => {
   app.get('/three/shadows', (req, res) => {
     res.render('pages/three/shadows');
   });
+
+  app.get('/three/animationrig', (req, res) => {
+    res.render('pages/three/animationrig');
+  });
 };
