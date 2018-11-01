@@ -7,7 +7,7 @@ const init = () => {
 
   // configure our renderer
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor('blue');
+  renderer.setClearColor('white');
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.BasicShadowMap;
 
@@ -23,10 +23,11 @@ const init = () => {
   cameraRig.add(camera);
 
   config.light = 0;
+  scene.fog = new THREE.FogExp2('white', 0.01);
+
   // instantiate objecst
-  // const boxGrid = createBoxGrid(20, 0.5);
-  const city = createCity(4, 1.7, 5, 0.3);
-  const plane1 = createPlane(50, 50);
+  const city = createCity(6, 1.7, 5, 0.3);
+  const plane1 = createPlane(100, 100);
   let light1 = createDirectionalLight('white', 0.8);
   const sphere1 = createSphere(0.1);
 
@@ -132,7 +133,7 @@ const createBoxGrid = (size, gap = 0.4) => {
   return boxGrid;
 };
 
-const createBox = (width, height, depth, color = 0x00ff00) => {
+const createBox = (width, height, depth, color = 'grey') => {
   const boxGeo = new THREE.BoxGeometry(width, height, depth);
   const boxMat = new THREE.MeshPhongMaterial({ color });
   const boxMesh = new THREE.Mesh(boxGeo, boxMat);
@@ -140,7 +141,7 @@ const createBox = (width, height, depth, color = 0x00ff00) => {
   return boxMesh;
 };
 
-const createPlane = (width, height, color = '#800000') => {
+const createPlane = (width, height, color = 'black') => {
   const planeGeo = new THREE.PlaneGeometry(width, height);
   const planeMat = new THREE.MeshPhongMaterial({
     color,
