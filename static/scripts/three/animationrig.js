@@ -19,11 +19,13 @@ const init = () => {
     1, // near clipping plane
     1000 // far clipping plane
   );
-  // const camera = new THREE.OrthographicCamera(-10, 10, 10, -10);
+  const cameraRig = new THREE.Group();
+  cameraRig.add(camera);
 
   config.light = 0;
   // instantiate objecst
-  const boxGrid = createBoxGrid(20, 0.5);
+  // const boxGrid = createBoxGrid(20, 0.5);
+  const city = createCity(4, 1.7, 5, 0.3);
   const plane1 = createPlane(50, 50);
   let light1 = createDirectionalLight('white', 0.8);
   const sphere1 = createSphere(0.1);
@@ -32,32 +34,36 @@ const init = () => {
   const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
   // move stuff around
-  camera.position.z = 10;
-  camera.position.y = 4;
-  camera.position.x = 1;
-  camera.lookAt(boxGrid);
+  cameraRig.position.y = 100;
+  cameraRig.position.z = 30;
+
+  // Tweens
+
+  new TWEEN.Tween(cameraRig.position)
+    .to({ z: -50, y: 5, x: [10, 0] }, 10000)
+    .start();
 
   plane1.rotateX(Math.PI / 2);
   plane1.name = 'plane-1';
 
-  boxGrid.name = 'boxGrid1';
+  // boxGrid.name = 'boxGrid1';
 
-  light1.translateY(3.6);
+  light1.position.x = 5;
+  light1.position.y = 10;
+  light1.position.z = -15;
+
   light1.name = 'light';
 
   // add stuff to the scene
-  scene.add(camera);
-  scene.add(boxGrid);
+  scene.add(cameraRig);
+  // scene.add(boxGrid);
+  scene.add(city);
   scene.add(plane1);
   scene.add(light1);
   light1.add(sphere1);
 
   // add GUI properties
   gui.add(light1, 'intensity', 0, 10);
-  gui.add(light1.position, 'x', -10, 10);
-  gui.add(light1.position, 'y', 1, 10);
-  gui.add(light1.position, 'z', -10, 10);
-  gui.add(config, 'light', [0, 1, 2, 3]);
 
   const canvas = document.getElementById('webgl');
   canvas.appendChild(renderer.domElement);
@@ -68,16 +74,40 @@ const init = () => {
 };
 
 const update = (renderer, scene, camera, controls) => {
+  // updates
   controls.update();
+  TWEEN.update();
+
+  // render our scene after updates
   renderer.render(scene, camera);
 
   // orbit the light in the sky
-  const light = scene.getObjectByName('light');
-  light.userData.orbit += light.userData.orbitSpeed;
-  light.position.x = Math.sin(light.userData.orbit) * light.userData.orbitSize;
-  light.position.z = Math.cos(light.userData.orbit) * light.userData.orbitSize;
+  // const light = scene.getObjectByName('light');
+  // light.userData.orbit += light.userData.orbitSpeed;
+  // light.position.x = Math.sin(light.userData.orbit) * light.userData.orbitSize;
+  // light.position.z = Math.cos(light.userData.orbit) * light.userData.orbitSize;
 
   window.requestAnimationFrame(() => update(renderer, scene, camera, controls));
+};
+
+const createCity = (size, gap, blockSize = 5, blockGap = 0.4) => {
+  const blockWidth = blockSize + blockSize * blockGap;
+  const city = new THREE.Group();
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      const block = createBoxGrid(blockSize, blockGap);
+      block.position.x = i * blockWidth + i * gap;
+      block.position.z = j * blockWidth + j * gap;
+      city.add(block);
+    }
+  }
+
+  // centre city
+  const offset = -(size * blockWidth + (size - 1) * gap - 1) / 2;
+  city.translateX(offset);
+  city.translateZ(offset);
+
+  return city;
 };
 
 const createBoxGrid = (size, gap = 0.4) => {
@@ -86,7 +116,7 @@ const createBoxGrid = (size, gap = 0.4) => {
   // create boxes in a size x size grid
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
-      const height = 1 + Math.random() * 4;
+      const height = 1 + Math.random() * 10;
       const box = createBox(1, height, 1);
       box.position.y = box.geometry.parameters.height / 2;
       box.position.x = i + i * gap;

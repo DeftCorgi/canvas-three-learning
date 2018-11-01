@@ -23,6 +23,11 @@ app.use(
   express.static(path.join(__dirname, 'node_modules/three-orbit-controls/'))
 );
 
+app.use(
+  '/lib/tween/',
+  express.static(path.join(__dirname, 'node_modules/@tweenjs/tween.js/src/'))
+);
+
 // routes
 require('./routes/canvas')(app);
 require('./routes/three')(app);
