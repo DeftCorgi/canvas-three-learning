@@ -18,4 +18,8 @@ module.exports = app => {
   app.get('/three/animationrig', (req, res) => {
     res.render('pages/three/animationrig');
   });
+
+  app.get('/three/materials', (req, res) => {
+    res.render('pages/three/materials');
+  });
 };
