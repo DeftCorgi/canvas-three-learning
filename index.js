@@ -31,5 +31,6 @@ app.use(
 // routes
 require('./routes/canvas')(app);
 require('./routes/three')(app);
+require('./routes/games')(app);
 
 app.listen(process.env.PORT || 3000);
