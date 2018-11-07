@@ -42,7 +42,6 @@ window.addEventListener('keydown', e => {
 });
 
 window.addEventListener('keyup', e => {
-  console.log(e.key);
   switch (e.key) {
     case 'w':
       keys.w = false;
@@ -88,6 +87,7 @@ class Player {
     this.maxSpeed = 12;
     this.dx = 0;
     this.dy = 0;
+    this.ricochets = [];
   }
 
   update() {
@@ -95,14 +95,20 @@ class Player {
     this.movement();
     this.shooting();
     this.draw();
+
+    // update our ricochets
+    this.ricochets.map(r => r.update());
   }
 
   shooting() {
+    // spawn a ricochet if mouse is clicked
     if (mouse.left) {
       const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
       const frontX = this.x - this.length * Math.cos(angle);
       const frontY = this.y - this.length * Math.sin(angle);
       const ricochet = new Ricochet(frontX, frontY, angle);
+      this.ricochets.push(ricochet);
+      console.log(this);
     }
   }
 
@@ -160,21 +166,30 @@ class Player {
 ******************/
 
 class Ricochet {
-  construcutor(x, y, angle) {
+  constructor(x, y, angle) {
     this.x = x;
     this.y = y;
+    this.radius = 3;
     this.angle = angle;
     this.speed = 10;
     this.maxBounces = 3;
   }
 
   update() {
+    this.movement();
     this.draw();
   }
+  movement() {
+    this.x = this.x - this.speed * Math.cos(this.angle);
+    this.y = this.y - this.speed * Math.sin(this.angle);
+  }
 
-  draw() {}
+  draw() {
+    c.beginPath();
+    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    c.stroke();
+  }
 }
 
 init();
 animate();
-console.log('hello world');
