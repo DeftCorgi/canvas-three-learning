@@ -169,19 +169,25 @@ class Ricochet {
   constructor(x, y, angle) {
     this.x = x;
     this.y = y;
-    this.radius = 3;
+    this.radius = 7;
     this.angle = angle;
-    this.speed = 10;
+    this.speed = 20;
     this.maxBounces = 3;
   }
 
   update() {
     this.movement();
+    this.collisions();
     this.draw();
   }
   movement() {
     this.x = this.x - this.speed * Math.cos(this.angle);
     this.y = this.y - this.speed * Math.sin(this.angle);
+  }
+
+  collisions() {
+    if (this.x - this.radius > window.innerWidth || this.x + this.radius < 0) {
+    }
   }
 
   draw() {
@@ -190,6 +196,10 @@ class Ricochet {
     c.stroke();
   }
 }
+
+class SquareObstacle {}
+
+class Goal {}
 
 init();
 animate();
