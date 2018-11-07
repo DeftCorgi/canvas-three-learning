@@ -88,6 +88,7 @@ class Player {
     this.dx = 0;
     this.dy = 0;
     this.ricochets = [];
+    this.cooldown = false;
   }
 
   update() {
@@ -102,13 +103,17 @@ class Player {
 
   shooting() {
     // spawn a ricochet if mouse is clicked
-    if (mouse.left) {
+    if (mouse.left && !this.cooldown) {
       const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
       const frontX = this.x - this.length * Math.cos(angle);
       const frontY = this.y - this.length * Math.sin(angle);
       const ricochet = new Ricochet(frontX, frontY, angle);
       this.ricochets.push(ricochet);
       console.log(this);
+
+      // cool down to fire ricochet again
+      this.cooldown = true;
+      setTimeout(() => (this.cooldown = false), 500);
     }
   }
 
