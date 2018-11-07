@@ -60,16 +60,18 @@ window.addEventListener('keyup', e => {
   }
 });
 
+const obstacles = [];
 let player;
 
 const init = () => {
   player = new Player(40, 40);
+  obstacles.push(new SquareObstacle(800, 100, 80, 600));
 };
 
 const animate = () => {
   c.clearRect(0, 0, window.innerWidth, window.innerHeight);
   player.update();
-
+  obstacles.map(o => o.update());
   window.requestAnimationFrame(animate);
 };
 
@@ -83,8 +85,8 @@ class Player {
     this.y = y;
     this.length = 50;
     this.width = 20;
-    this.moveSpeed = 5;
-    this.maxSpeed = 12;
+    this.moveSpeed = 3;
+    this.maxSpeed = 7;
     this.dx = 0;
     this.dy = 0;
     this.ricochets = [];
@@ -95,26 +97,11 @@ class Player {
     // update physics and stuff
     this.movement();
     this.shooting();
+    this.collisions();
     this.draw();
 
     // update our ricochets
     this.ricochets.map(r => r.update());
-  }
-
-  shooting() {
-    // spawn a ricochet if mouse is clicked
-    if (mouse.left && !this.cooldown) {
-      const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
-      const frontX = this.x - this.length * Math.cos(angle);
-      const frontY = this.y - this.length * Math.sin(angle);
-      const ricochet = new Ricochet(frontX, frontY, angle);
-      this.ricochets.push(ricochet);
-      console.log(this);
-
-      // cool down to fire ricochet again
-      this.cooldown = true;
-      setTimeout(() => (this.cooldown = false), 500);
-    }
   }
 
   movement() {
@@ -135,8 +122,33 @@ class Player {
     this.y += this.dy;
 
     // delta degredation
-    this.dx -= Math.sign(this.dx) * 2;
-    this.dy -= Math.sign(this.dy) * 2;
+    this.dx -= Math.sign(this.dx) * 1;
+    this.dy -= Math.sign(this.dy) * 1;
+  }
+
+  shooting() {
+    // spawn a ricochet if mouse is clicked
+    if (mouse.left && !this.cooldown) {
+      const angle = Math.atan2(this.y - mouse.y, this.x - mouse.x);
+      const frontX = this.x - this.length * Math.cos(angle);
+      const frontY = this.y - this.length * Math.sin(angle);
+      const ricochet = new Ricochet(frontX, frontY, angle);
+      this.ricochets.push(ricochet);
+
+      // cool down to fire ricochet again
+      this.cooldown = true;
+      setTimeout(() => (this.cooldown = false), 500);
+    }
+  }
+
+  collisions() {
+    // wall collsions
+    if (this.x > window.innerWidth) this.x = window.innerWidth;
+    if (this.x < 0) this.x = 0;
+    if (this.y > window.innerHeight) this.y = window.innerHeight;
+    if (this.y < 0) this.y = 0;
+
+    obstacles.map(o => {});
   }
 
   draw() {
@@ -190,10 +202,7 @@ class Ricochet {
     this.y = this.y - this.speed * Math.sin(this.angle);
   }
 
-  collisions() {
-    if (this.x - this.radius > window.innerWidth || this.x + this.radius < 0) {
-    }
-  }
+  collisions() {}
 
   draw() {
     c.beginPath();
@@ -202,7 +211,30 @@ class Ricochet {
   }
 }
 
-class SquareObstacle {}
+/*************** *
+      Obstacles
+******************/
+
+class SquareObstacle {
+  constructor(x, y, length, width) {
+    this.x = x;
+    this.y = y;
+    this.length = length;
+    this.width = width;
+  }
+
+  update() {
+    this.draw();
+  }
+
+  draw() {
+    c.fillRect(this.x, this.y, this.length, this.width);
+  }
+}
+
+/*************** *
+      Goal
+******************/
 
 class Goal {}
 
