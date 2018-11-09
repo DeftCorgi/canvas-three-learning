@@ -6,11 +6,20 @@ class Bullet {
     this.radius = 12;
   }
 
-  update() {
+  update(colliders = []) {
     // move up
     this.y -= this.speed;
-
+    this.collisions(colliders);
     this.draw();
+  }
+
+  collisions(colliders) {
+    colliders.map(c => {
+      const d = dist(c.x, c.y, this.x, this.y);
+      if (d < c.radius + this.radius) {
+        c.hit();
+      }
+    });
   }
 
   draw() {

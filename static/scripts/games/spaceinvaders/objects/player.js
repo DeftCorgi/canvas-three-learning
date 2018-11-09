@@ -1,17 +1,20 @@
 class Player {
-  constructor(x, y, width, height) {
+  constructor(x, y, width, height, invaders) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.speed = 5;
     this.bullets = [];
+    this.fireRate = 3;
+    this.coolDown = false;
+    this.invaders = invaders;
   }
 
   update() {
     this.controls();
     this.draw();
-    this.bullets.map(b => b.update());
+    this.bullets.map(b => b.update(this.invaders));
   }
 
   controls() {
@@ -32,12 +35,18 @@ class Player {
   }
 
   shoot() {
-    const bullet = new Bullet(this.x, this.y + this.height / 2);
-    this.bullets.push(bullet);
+    if (!this.coolDown) {
+      const bullet = new Bullet(this.x, this.y + this.height / 2);
+      this.bullets.push(bullet);
+
+      this.coolDown = true;
+      setTimeout(() => (this.coolDown = false), 1000 / this.fireRate);
+    }
   }
 
   draw() {
     rectMode(CENTER);
+    fill('#E6E8E6');
     rect(this.x, this.y, this.width, this.height);
   }
 
