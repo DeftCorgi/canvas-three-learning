@@ -5,11 +5,13 @@ class Invader {
     this.radius = radius;
     this.speed = 2;
     this.color = '#F9C527';
+    this.deathParticles = [];
   }
 
   update(direction, goalY) {
     this.move(direction, goalY);
     this.draw();
+    this.deathParticles.map(p => p.update());
   }
 
   move(direction, goalY) {
@@ -26,6 +28,10 @@ class Invader {
 
   // call this after registered hit
   hit() {
+    this.explode();
+  }
+
+  explode() {
     this.color = '#C1292E';
   }
 
