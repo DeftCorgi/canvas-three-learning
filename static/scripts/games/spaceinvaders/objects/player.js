@@ -14,7 +14,10 @@ class Player {
   update() {
     this.controls();
     this.draw();
-    this.bullets.map(b => b.update(this.invaders));
+    this.bullets.map((b, i) => {
+      b.update(this.invaders);
+      if (b.hit) this.bullets.splice(i);
+    });
   }
 
   controls() {

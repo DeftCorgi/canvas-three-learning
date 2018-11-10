@@ -4,6 +4,7 @@ class Bullet {
     this.y = y;
     this.speed = 9;
     this.radius = 12;
+    this.hit = false;
   }
 
   update(colliders = []) {
@@ -17,6 +18,7 @@ class Bullet {
     colliders.map(c => {
       const d = dist(c.x, c.y, this.x, this.y);
       if (d < c.radius / 2 + this.radius / 2) {
+        this.hit = true;
         c.hit();
       }
     });

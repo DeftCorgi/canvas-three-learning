@@ -5,6 +5,7 @@ class Invader {
     this.radius = radius;
     this.speed = 2;
     this.color = '#F9C527';
+    this.numDeathParticles = 7;
     this.deathParticles = [];
   }
 
@@ -33,6 +34,9 @@ class Invader {
 
   explode() {
     this.color = '#C1292E';
+
+    for (let i = 0; i < this.numDeathParticles; i++)
+      this.deathParticles.push(new InvaderDeathParticles(this.x, this.y));
   }
 
   draw() {
