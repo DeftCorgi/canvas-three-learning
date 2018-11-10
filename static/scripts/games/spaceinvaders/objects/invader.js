@@ -1,39 +1,36 @@
 class Invader {
-  constructor(x, y) {
+  constructor(x, y, radius) {
     this.x = x;
     this.y = y;
-    this.radius = 30;
-    this.speed = 1;
-    this.hit = false;
+    this.radius = radius;
+    this.speed = 2;
+    this.color = '#F9C527';
   }
 
-  update(direction, goalY, flipDirection, extendGoal) {
-    this.move(direction, goalY, flipDirection, extendGoal);
+  update(direction, goalY) {
+    this.move(direction, goalY);
     this.draw();
   }
 
-  move(direction, goalY, flipDirection, extendGoal) {
-    if (this.x + this.radius / 2 >= width || this.x - this.radius / 2 <= 0) {
-      console.log(direction);
-      this.x += -direction * this.speed;
-
-      // callbacks to update invader goals
-      flipDirection();
-      extendGoal();
-    } else {
-      this.x += direction * this.speed;
-    }
+  move(direction, goalY) {
+    this.x += direction * this.speed;
 
     if (this.y < goalY) {
       this.y = goalY;
     }
   }
 
+  touchingWall() {
+    return this.x + this.radius / 2 >= width || this.x - this.radius / 2 <= 0;
+  }
+
   // call this after registered hit
-  hit() {}
+  hit() {
+    this.color = '#C1292E';
+  }
 
   draw() {
-    fill(255, 204, 0);
+    fill(this.color);
     ellipse(this.x, this.y, this.radius, this.radius);
   }
 }

@@ -1,6 +1,6 @@
 // globals
 const NUM_INVADERS = 9;
-const INVADER_RADIUS = 30;
+const INVADER_RADIUS = 50;
 
 // drawable obejcts
 const invaders = [];
@@ -12,7 +12,7 @@ function setup() {
 
   for (let i = 0; i < NUM_INVADERS; i++) {
     const shift = ((NUM_INVADERS - 1) * 70) / 2;
-    const invader = new Invader(width / 2 + i * 70 - shift, 20);
+    const invader = new Invader(width / 2 + i * 70 - shift, 20, INVADER_RADIUS);
     invaders.push(invader);
   }
 }
@@ -24,13 +24,16 @@ function draw() {
 
   player.update();
 
-  // direction of invaders
-  invaders.map(o =>
-    o.update(
-      direction,
-      goalY,
-      () => (direction = -direction),
-      () => (goalY += 20)
-    )
-  );
+  // update invader direction and Y
+  // when first or last hit a wall
+  const touchingWall =
+    invaders[0].touchingWall() || invaders[invaders.length - 1].touchingWall();
+
+  if (touchingWall) {
+    direction = -direction;
+    goalY += INVADER_RADIUS;
+  }
+  invaders.map(o => {
+    o.update(direction, goalY);
+  });
 }

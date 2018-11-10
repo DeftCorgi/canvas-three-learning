@@ -16,7 +16,7 @@ class Bullet {
   collisions(colliders) {
     colliders.map(c => {
       const d = dist(c.x, c.y, this.x, this.y);
-      if (d < c.radius + this.radius) {
+      if (d < c.radius / 2 + this.radius / 2) {
         c.hit();
       }
     });
