@@ -24,16 +24,23 @@ function draw() {
 
   player.update();
 
-  // update invader direction and Y
-  // when first or last hit a wall
-  const touchingWall =
-    invaders[0].touchingWall() || invaders[invaders.length - 1].touchingWall();
+  if (invaders.length > 0) {
+    // update invader direction and Y
+    // when first or last hit a wall
+    const touchingWall =
+      invaders[0].touchingWall() ||
+      invaders[invaders.length - 1].touchingWall();
 
-  if (touchingWall) {
-    direction = -direction;
-    goalY += INVADER_RADIUS;
+    if (touchingWall) {
+      direction = -direction;
+      goalY += INVADER_RADIUS;
+    }
+    invaders.map((o, i) => {
+      // remove invader when its dead
+      if (o.dead) {
+        invaders.splice(i, 1);
+      }
+      o.update(direction, goalY);
+    });
   }
-  invaders.map(o => {
-    o.update(direction, goalY);
-  });
 }

@@ -16,7 +16,7 @@ class Player {
     this.draw();
     this.bullets.map((b, i) => {
       b.update(this.invaders);
-      if (b.hit) this.bullets.splice(i);
+      if (b.hit) this.bullets.splice(i, 1);
     });
   }
 

@@ -4,9 +4,11 @@ class Invader {
     this.y = y;
     this.radius = radius;
     this.speed = 2;
-    this.color = '#F9C527';
+    this.colors = ['#C1292E', '#B96529', '#F9C527'];
+    this.health = 2;
     this.numDeathParticles = 7;
     this.deathParticles = [];
+    this.dead = false;
   }
 
   update(direction, goalY) {
@@ -29,18 +31,20 @@ class Invader {
 
   // call this after registered hit
   hit() {
+    this.health -= 1;
     this.explode();
+    if (this.health < 0) {
+      this.dead = true;
+    }
   }
 
   explode() {
-    this.color = '#C1292E';
-
     for (let i = 0; i < this.numDeathParticles; i++)
       this.deathParticles.push(new InvaderDeathParticles(this.x, this.y));
   }
 
   draw() {
-    fill(this.color);
+    fill(this.colors[this.health] || '#C1292E');
     ellipse(this.x, this.y, this.radius, this.radius);
   }
 }
