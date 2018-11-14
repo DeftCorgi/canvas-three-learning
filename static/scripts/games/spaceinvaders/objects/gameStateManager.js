@@ -2,7 +2,8 @@ class GameStateManager {
   constructor() {
     this.score = 0;
     this.lives = 3;
-    this.paused = true;
+    this.paused = false;
+    this.started = false;
   }
 
   update() {
@@ -11,14 +12,46 @@ class GameStateManager {
 
   draw() {
     // display menu if paused
-    if (this.paused) {
+    if (!this.started) {
       this.drawMenu();
+    } else {
+      if (this.paused) {
+        this.drawPause();
+      }
+      this.drawScore();
     }
   }
 
-  drawMenu() {
+  drawPause() {
+    textSize(48);
     textAlign(CENTER, CENTER);
+    fill('white');
+    //title
     text('- Paused -', width / 2, height / 2);
+  }
+
+  drawMenu() {
+    textSize(68);
+    textAlign(CENTER, CENTER);
+    fill('white');
+    //title
+    text('SPACE INVADERS', width / 2, height / 2 - 80);
+
+    // prompt
+    textSize(48);
+    text('- click to start -', width / 2, height / 2);
+  }
+
+  drawScore() {
+    textSize(28);
+    textAlign(LEFT, BOTTOM);
+    fill('white');
+    //title
+    text('Score: ' + this.score, 0, height);
+  }
+
+  addScore(score) {
+    this.score += score;
   }
 }
 
@@ -27,5 +60,11 @@ var manager = new GameStateManager();
 function keyPressed() {
   if (keyCode === 80 || keyCode === ESCAPE) {
     manager.paused = !manager.paused;
+  }
+}
+
+function mousePressed() {
+  if (!manager.started) {
+    manager.started = true;
   }
 }

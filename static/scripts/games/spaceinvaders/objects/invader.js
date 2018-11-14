@@ -33,6 +33,7 @@ class Invader {
 
   // call this after registered hit
   hit() {
+    manager.addScore(1);
     this.health -= 1;
     this.explode();
     if (this.health < 0) {
