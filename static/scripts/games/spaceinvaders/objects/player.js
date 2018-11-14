@@ -12,7 +12,9 @@ class Player {
   }
 
   update() {
-    this.controls();
+    if (!manager.paused) {
+      this.controls();
+    }
     this.draw();
     this.bullets.map((b, i) => {
       b.update(this.invaders);

@@ -12,7 +12,9 @@ class Invader {
   }
 
   update(direction, goalY) {
-    this.move(direction, goalY);
+    if (!manager.paused) {
+      this.move(direction, goalY);
+    }
     this.draw();
     this.deathParticles.map(p => p.update());
   }

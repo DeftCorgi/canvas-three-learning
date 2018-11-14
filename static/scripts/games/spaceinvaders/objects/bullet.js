@@ -8,9 +8,11 @@ class Bullet {
   }
 
   update(colliders = []) {
-    // move up
-    this.y -= this.speed;
-    this.collisions(colliders);
+    if (!manager.paused) {
+      // move up
+      this.y -= this.speed;
+      this.collisions(colliders);
+    }
     this.draw();
   }
 

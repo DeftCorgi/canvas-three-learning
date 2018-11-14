@@ -7,7 +7,6 @@ const invaders = [];
 let player;
 function setup() {
   createCanvas(800, window.innerHeight);
-
   player = new Player(width / 2, height - 70, 40, 40, invaders);
 
   for (let i = 0; i < NUM_INVADERS; i++) {
@@ -21,7 +20,7 @@ let direction = 1;
 let goalY = 20;
 function draw() {
   background(51);
-
+  manager.update();
   player.update();
 
   if (invaders.length > 0) {

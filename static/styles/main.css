@@ -21,8 +21,6 @@ body {
   background: rgb(238, 231, 231);
 }
 
-canvas {
-  position: absolute;
-  top: 0;
-  right: 0;
+.split {
+  display: flex;
 }
