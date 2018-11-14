@@ -23,12 +23,12 @@ class Player {
   }
 
   controls() {
-    if (keyIsDown(65)) {
+    if (keyIsDown(65) || keyIsDown(LEFT_ARROW)) {
       /* A */
       this.move(-1);
     }
 
-    if (keyIsDown(68)) {
+    if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) {
       /* D */
       this.move(1);
     }

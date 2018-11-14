@@ -38,8 +38,11 @@ class GameStateManager {
     text('SPACE INVADERS', width / 2, height / 2 - 80);
 
     // prompt
+    textSize(28);
+    text('use Arrow keys or WASD to move', width / 2, height / 2);
+    text('spacebar to shoot', width / 2, height / 2 + 30);
     textSize(48);
-    text('- click to start -', width / 2, height / 2);
+    text('- click to start -', width / 2, height / 2 + 90);
   }
 
   drawScore() {
